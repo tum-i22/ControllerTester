@@ -56,8 +56,30 @@ Besides this, the fault model also checks if the actual values are in the physic
 
 The objective functions of each requirement are computed based on the controller's actual value signal after the final desired value is input to it. The intermediate outcome of the test case generation process is a heatmap indicating possible problematic regions in the 2-D input space. The user can choose the regions he wants to investigate further. The final outcome of our test case generation is a worst case test scenario for a particular requirement in a certain region.
 
+### The Disturbance Fault Model
+
+Under the presence of a disturbance, the controller might not able to reach the desired value or might reach it slower than expected, until the opposing force is removed. It could also be the case that, after the removal of this opposing force, the controller achieves a signiﬁcant overshoot while moving to the initially speciﬁed desired value, which now becomes reachable.
+
+The controller is simulated for a certain time *T* using the 2-dimensional input point *p*, made up of the two signals, *Desired(t)* and *Disturbance(t)*. The discretized output of the controller, *Actual(t)* is then evaluated against the requirements presented for the step fault model.
+
+### The Controller Comparison Fault Model
+
+Although the controller is typically implemented in continuous time at the model level, on a microcontroller, the controller has to run in discrete time, with a ﬁxed time step Tstep and a corresponding frequency of f = 1 Tstep. The Laplace transforms of the system’s functions must be converted to Z-transforms, and careful attention needs to be put into choosing a correct discretization time step, since this can cause stability and performance issues. Depending on the type of approximation used, a stable continuous-time controller-plant model can be mapped to an unstable discrete-time model. Furthermore, time delays compared to the continuous-time model will need to be analyzed.
+
+The search process is the same as for the standard step fault model for a single controller, however, the objective functions are different. We measure the difference in the values for the ﬁve objective functions presented for the step fault model between the original and the derived model, and in addition, we measure the average and maximum deviations in the actual value.
+
+### The Allowed Oscillation Fault Model
+
+In the presence of noise when reading the desired value, or simply due to small variations in the desired value, the controller has the requirement not to change the actual value, if the new desired value varies with regard to the actual value of the system by a small percentage *oscallowed[%]*, e.g. by a maximum of 5%.
+
+To check if the controller conforms to the above requirement, we must run the system with two desired values, in a similar way to the step fault model. This combinatorial testing approach allows us to test if there exists a combination of two desired values where the allowed oscillation requirement is voided. The total simulation time should allow for the controller to stabilize upon reaching the initial and ﬁnal desired values.
+
+### The Sine Fault Model
+
+The motivation behind this fault model is checking if the frequency response of the system conforms to the expectations that the control system designer has, for example from looking at the Bode plot of the system's transfer function. It can be the case that the implemented controller does not have the same frequency response because of implementation faults.
+
 ## Further development
-The tool is designed to be easily extendable with plug-in Controller Fault Models. A template for Fault Models will be provided in a future version.
+The tool is designed to be easily extendable with plug-in Controller Fault Models.
 
 ## Known issues
 * When moving a project from a computer to another or re-installing the application, always re-run the Simulation Settings Validation, since the MATLAB COM Automation Server fails to build the accelerated model. For this purpose please re-validate the simulation settings so that an accelerated model is built, or create a new project on the other PC, since the SimulationWorker contains a workaround for building the accelerated model.
